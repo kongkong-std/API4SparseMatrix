@@ -63,7 +63,7 @@ void Coo2Csr(const Coo *mat_coo, Csr *mat_csr)
                 ++cnt_row;
             }
         }
-        mat_csr->row_idx[index + 1] = cnt_row;
+        mat_csr->row_ptr[index + 1] = cnt_row;
     }
 }
 
