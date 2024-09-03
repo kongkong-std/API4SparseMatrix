@@ -1,59 +1,36 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-// macro
-#define ENABLE_COMPLEX
-
-// header
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// struct
-#ifdef ENABLE_COMPLEX
-typedef struct scalar
+#ifdef TYPE_REAL
+typedef struct{
+    int m, n, nnz;
+    int * row_idx, * col_idx;
+    double * val;
+}MatCOO;
+typedef struct
 {
     /* data */
-    double re;
-    double im;
-} Scalar;
-#else
-typedef double Scalar;
-#endif
-
-typedef struct coo
+    int n, nnz;
+    int * row_idx, *row_ptr, * col_idx;
+    double * val;
+}MatCSR;
+#elif defined(TYPE_COMPLEX)
+typedef struct{
+    int m, n, nnz;
+    int * row_idx, * col_idx;
+    double * val_re, * val_im;
+}MatCOO;
+typedef struct
 {
     /* data */
-    int n;
-    int nnz;
-    int *row_idx;
-    int *col_idx;
-    Scalar *val;
-} Coo;
+    int n, nnz;
+    int * row_idx, *row_ptr, * col_idx;
+    double * val_re, *val_im;
+}MatCSR;
+#endif    // scalar type
 
-typedef struct csr
-{
-    /* data */
-    int n;
-    int nnz;
-    int *row_idx;
-    int *row_ptr;
-    int *col_idx;
-    Scalar *val;
-} Csr;
-
-// function prototype
-void CooFileProcess(const char * /*path to file*/,
-                    Coo * /*coo matrix data*/);
-
-void CsrFileProcess(const char * /*path to file*/,
-                    const Csr * /*csr matrix data*/);
-
-void CooMatrixFree(Coo * /*coo matrix data*/);
-
-void CsrMatrixFree(Csr * /*csr matrix data*/);
-
-void Coo2Csr(const Coo * /*coo matrix data*/,
-             Csr * /*csr matrix data*/);
-
-#endif
+#endif // main.h
