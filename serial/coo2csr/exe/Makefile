@@ -7,33 +7,58 @@ OBJECT = $(patsubst %.c,%.o,$(wildcard $(SRC)/*.c))
 # LIB = -lm
 LIB = 
 
-# 检查是否未设置或同时设置了 type_real 和 type_complex
-ifeq ($(type_real)$(type_complex),)
-$(error You must set either type_real or type_complex)
+# 默认设置为空
+type_real :=
+type_complex :=
+
+# 根据命令行目标设置相应的变量
+ifeq ($(filter type_real, $(MAKECMDGOALS)),type_real)
+type_real = 1
 endif
 
-ifeq ($(type_real)$(type_complex),11)
-$(error You cannot set both type_real and type_complex at the same time)
+ifeq ($(filter type_complex, $(MAKECMDGOALS)),type_complex)
+type_complex = 1
 endif
 
-# 如果 type_real 被设置，则添加 -DTYPE_REAL
-ifdef type_real
-CFLAGS += -DTYPE_REAL
-endif
+# 伪造目标以避免误解释
+type_real: 
+	@:
 
-# 如果 type_complex 被设置，则添加 -DTYPE_COMPLEX
-ifdef type_complex
-CFLAGS += -DTYPE_COMPLEX
-endif
+type_complex:
+	@:
 
 .PHONY: all clean
-all: app_exe
+
+all: check_config app_exe
+
+check_config:
+	@if [ "$(type_real)$(type_complex)" = "" ]; then \
+	    echo "You must set exactly one of type_real or type_complex to 1"; \
+	    exit 1; \
+	elif [ "$(type_real)$(type_complex)" = "11" ]; then \
+	    echo "You cannot set both type_real and type_complex to 1 at the same time"; \
+	    exit 1; \
+	fi
 
 app_exe: $(OBJECT)
-	$(CC) $(CFLAGS) -o app_exe $(OBJECT) $(LIB)
+	$(CC) $(CFLAGS) $(CFLAGS_ADD) -o app_exe $(OBJECT) $(LIB)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c "$<" -o "$@"
+	$(CC) $(CFLAGS) $(CFLAGS_ADD) -c "$<" -o "$@"
 
 clean:
 	rm -f app_exe $(OBJECT)
+
+# 将 CFLAGS_ADD 设置为相应的标志
+ifeq ($(type_real),1)
+CFLAGS_ADD = -DTYPE_REAL
+endif
+
+ifeq ($(type_complex),1)
+CFLAGS_ADD = -DTYPE_COMPLEX
+endif
+
+# command line
+# 'make type_real all' for real version
+# 'make type_complex all' for complex version
+# 'make clean' clean all objects
