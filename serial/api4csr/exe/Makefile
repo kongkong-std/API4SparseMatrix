@@ -1,6 +1,7 @@
 # makefile for app_exe
+# module load 
 CC = gcc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -O3
 SRC = ../src
 OBJECT = $(patsubst %.c,%.o,$(wildcard $(SRC)/*.c))
 # LIB = -lm
@@ -16,4 +17,4 @@ app_exe: $(OBJECT)
 	$(CC) $(CFLAGS) -c "$<" -o "$@"
 
 clean:
-	rm app_exe $(OBJECT)
+	rm -f app_exe $(OBJECT)
