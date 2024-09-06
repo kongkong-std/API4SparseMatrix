@@ -18,3 +18,6 @@ app_exe: $(OBJECT)
 
 clean:
 	rm -f app_exe $(OBJECT)
+
+# command line
+# 'make all'

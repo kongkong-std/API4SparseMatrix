@@ -513,11 +513,8 @@ void CSRComplexMatrixFileProcess(const char *path, MatCSRComplex *mat)
     }
     for (int index = 0; index < nnz; ++index)
     {
-        fscanf(fp, "%lf", mat->val_re + index);
-    }
-    for (int index = 0; index < nnz; ++index)
-    {
-        fscanf(fp, "%lf", mat->val_im + index);
+        fscanf(fp, "%lf%lf", mat->val_re + index,
+               mat->val_im + index);
     }
 
     fclose(fp);

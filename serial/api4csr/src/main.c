@@ -24,6 +24,7 @@ int main(int argc, char **argv)
         }
     }
 
+#if 0
     MatCOOComplex mat;
     COOComplexMatrixFileProcess(path_mat, &mat);
 
@@ -46,6 +47,33 @@ int main(int argc, char **argv)
     COORealMatrixDataFree(minus_mat_im);
     free(minus_mat_im);
     COORealMatrixDataFree(mat_block);
+    free(mat_block);
+#endif // coo complex matrix data
+
+    MatCSRComplex mat;
+    CSRComplexMatrixFileProcess(path_mat, &mat);
+
+    //MatrixDataOutputFile("cst-test.txt", &mat, CSR_COMPLEX);
+
+    MatCSRReal *mat_re = CSRComplexMatrixRealPart(&mat);
+    MatCSRReal *mat_im = CSRComplexMatrixImaginaryPart(&mat);
+    MatCSRReal *minus_mat_im = CSRRealMatrixScale(mat_im, -1.);
+
+    MatCSRReal *mat_block = CSRRealMatrix4SubAssemble(mat_re, minus_mat_im, mat_im, mat_re);
+
+    MatrixDataOutputFile(dst_re, mat_re, CSR_REAL);
+    MatrixDataOutputFile(dst_im, mat_im, CSR_REAL);
+    MatrixDataOutputFile(dst_mat, mat_block, CSR_REAL);
+
+    // free memory
+    CSRComplexMatrixDataFree(&mat);
+    CSRRealMatrixDataFree(mat_re);
+    free(mat_re);
+    CSRRealMatrixDataFree(mat_im);
+    free(mat_im);
+    CSRRealMatrixDataFree(minus_mat_im);
+    free(minus_mat_im);
+    CSRRealMatrixDataFree(mat_block);
     free(mat_block);
 
     return 0;
